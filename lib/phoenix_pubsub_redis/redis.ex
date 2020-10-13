@@ -56,8 +56,12 @@ defmodule Phoenix.PubSub.Redis do
     pool_size = Keyword.fetch!(opts, :pool_size)
 
     opts = handle_url_opts(opts)
-    opts = Keyword.merge(@defaults, opts)
-    redis_opts = Keyword.take(opts, [:host, :port, :password, :database, :ssl, :sentinel])
+    opts = Keyword.merge(@default, opts)
+    redis_opts =
+      opts
+      |> Keyword.take([:host, :port, :password, :database, :ssl, :sentinel])
+      |> handle_sentinel_opts()
+      |> IO.inspect(label: "Redix opts in pubsub")
 
     pool_name   = Module.concat(server_name, Pool)
     namespace   = redis_namespace(server_name)
@@ -94,6 +98,14 @@ defmodule Phoenix.PubSub.Redis do
   defp handle_url_opts(opts) do
     if opts[:url] do
       do_handle_url_opts(opts)
+    else
+      opts
+    end
+  end
+
+  def handle_sentinel_opts(opts) do
+    if opts[:sentinel] do
+      Keyword.drop(opts, [:host, :port])
     else
       opts
     end
