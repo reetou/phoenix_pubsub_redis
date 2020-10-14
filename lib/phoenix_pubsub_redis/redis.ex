@@ -61,7 +61,6 @@ defmodule Phoenix.PubSub.Redis do
       opts
       |> Keyword.take([:host, :port, :password, :database, :ssl, :sentinel])
       |> handle_sentinel_opts()
-      |> IO.inspect(label: "Redix opts in pubsub")
 
     pool_name   = Module.concat(server_name, Pool)
     namespace   = redis_namespace(server_name)
