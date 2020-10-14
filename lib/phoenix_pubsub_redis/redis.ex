@@ -39,6 +39,7 @@ defmodule Phoenix.PubSub.Redis do
       clients, a pool size equal to the number of schedulers (cores) is a well
       rounded size.
     * `:socket_opts` - List of options that are passed to the network layer when connecting to the Redis server. Default `[]`
+    * `:sentinel` - Redix sentinel configuration. Default to `nil`
 
   """
 
