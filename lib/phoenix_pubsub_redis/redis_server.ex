@@ -61,14 +61,6 @@ defmodule Phoenix.PubSub.RedisServer do
     {:ok, establish_conn(state)}
   end
 
-  def handle_call(:healthcheck, _from, %{redix_pid: nil} = state) do
-    {:reply, :error, state}
-  end
-
-  def handle_call(:healthcheck, _from, %{redix_pid: pid} = state) when is_pid(pid) do
-    {:reply, :ok, state}
-  end
-
   def handle_info(:establish_conn, state) do
     {:noreply, establish_conn(%{state | reconnect_timer: nil})}
   end
@@ -135,6 +127,7 @@ defmodule Phoenix.PubSub.RedisServer do
     case Redix.PubSub.start_link(Keyword.merge(redis_opts, sync_connect: true)) do
       {:ok, redix_pid} -> establish_success(%{state | redix_pid: redix_pid})
       {:error, _} = error ->
+        IO.inspect(state.opts, label: "Failed with opts")
         Logger.error("Pubsub: Cannot establish connection: #{inspect error}")
         establish_failed(state)
     end
